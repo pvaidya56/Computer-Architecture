@@ -19,24 +19,33 @@ class CPU:
 
     def load(self):
         """Load a program into memory."""
-     
+        if len(sys.argv) < 2:
+            print("Please pass in a second filename: python3 in_and_out.py second_filename.py")
+            sys.exit()
+
         address = 0
+        file_name = sys.argv[1] 
+        with open(file_name) as file:
+            for line in file:
+                print(line)
+            sys.exit(0)
+        
 
         # For now, we've just hardcoded a program:
 
-        program = [
-            # From print8.ls8
-            0b10000010, # LDI R0,8
-            0b00000000,
-            0b00001000,
-            0b01000111, # PRN R0
-            0b00000000,
-            0b00000001, # HLT
-        ]
+        # program = [
+        #     # From print8.ls8
+        #     0b10000010, # LDI R0,8
+        #     0b00000000,
+        #     0b00001000,
+        #     0b01000111, # PRN R0
+        #     0b00000000,
+        #     0b00000001, # HLT
+        # ]
 
-        for instruction in program:
-            self.ram[address] = instruction
-            address += 1
+        # for instruction in program:
+        #     self.ram[address] = instruction
+        #     address += 1
 
 
     def alu(self, op, reg_a, reg_b):
