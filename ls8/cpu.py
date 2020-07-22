@@ -10,6 +10,8 @@ class CPU:
         self.ram = [0] * 255
         self.reg = [0] * 8
         self.pc = 0
+        self.SP = 7
+        self.reg[7] = 255
 
     
     def load(self, file_name):
@@ -81,6 +83,8 @@ class CPU:
         LDI = 0b10000010
         PRN = 0b01000111
         MUL = 0b10100010 
+        PUSH = 0b01000101
+        POP = 0b01000110
 
         while not halted:
             ir = self.ram[self.pc]     
@@ -104,7 +108,25 @@ class CPU:
                 reg_num_b = self.ram_read(self.pc + 2)
                 self.reg[reg_num_a] *= self.reg[reg_num_b]
                 self.pc += 3
-            # self.pc += 1 + (ir >> 6)
+            elif ir == PUSH:
+                # 1. Decrement the `SP`.
+                # 2. Copy the value in the given register to the address pointed to by
+                # `SP`.
+                self.reg[7] = (self.reg[7] - 1) % 255
+                self.SP = self.reg[7]
+                register_address = self.ram[self.pc + 1]
+                value = self.reg[register_address]
+                self.ram[self.SP] = value
+                self.pc += 2
+            elif ir == POP:
+                # 1. Copy the value from the address pointed to by `SP` to the given register.
+                # 2. Increment `SP`.
+                self.SP = self.reg[7]
+                value = self.ram[self.SP]
+                register_address = self.ram[self.pc + 1]
+                self.reg[register_address] = value
+                self.reg[7] = (self.SP + 1) % 255
+                self.pc += 2
 
             else:
                 print(f'Unknown instruction {ir} at address {self.pc}')
